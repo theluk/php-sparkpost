@@ -100,9 +100,16 @@ class APIResource
      *
      * @return array Result of the request
      */
-    public function create(array $body = [])
+    public function create($resourcePath = null, $body = [], array $options = [])
     {
-        return $this->callResource('post', null, ['body' => $body]);
+        // shift, if resourcepath was omitted
+        if (is_array($resourcePath)) {
+            $options = $body;
+            $body = $resourcePath;
+            $resourcePath = null;
+        }
+
+        return $this->callResource('post', $resourcePath, array_merge($options, ['body' => $body]));
     }
 
     /**
@@ -115,9 +122,9 @@ class APIResource
      *
      * @throws APIResponseException
      */
-    public function update($resourcePath, array $body = [])
+    public function update($resourcePath, array $body = [], array $options = [])
     {
-        return $this->callResource('put', $resourcePath, ['body' => $body]);
+        return $this->callResource('put', $resourcePath, array_merge($options, ['body' => $body]));
     }
 
     /**
@@ -212,7 +219,7 @@ class APIResource
      *
      * @throws APIResponseException
      */
-    private function callResource($action, $resourcePath = null, $options = [])
+    protected function callResource($action, $resourcePath = null, $options = [])
     {
         $action = strtoupper($action); // normalize
 

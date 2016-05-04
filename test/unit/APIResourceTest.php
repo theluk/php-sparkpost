@@ -64,6 +64,24 @@ class APIResourceTest extends \PHPUnit_Framework_TestCase
         $responseMock->shouldReceive('getBody->getContents')->andReturn(json_encode($testBody));
 
         $this->assertEquals($testBody, $this->resource->create($testInput));
+
+
+    }
+
+    public function testCreateResourcePathAndQuery() {
+
+        $testInput = ['test' => 'body'];
+        $testBody = ['results' => ['my' => 'test']];
+        $responseMock = Mockery::mock();
+        $this->sparkPostMock->httpAdapter->shouldReceive('send')
+            ->once()
+            ->with('/.*\/test\?arg\=1$/', 'POST', Mockery::type('array'), json_encode($testInput))
+            ->andReturn($responseMock);
+
+        $responseMock->shouldReceive('getStatusCode')->andReturn(200);
+        $responseMock->shouldReceive('getBody->getContents')->andReturn(json_encode($testBody));
+
+        $this->assertEquals($testBody, $this->resource->create("test", $testInput, ["query" => ["arg" => 1]]));        
     }
 
     public function testUpdate()
@@ -79,6 +97,22 @@ class APIResourceTest extends \PHPUnit_Framework_TestCase
         $responseMock->shouldReceive('getBody->getContents')->andReturn(json_encode($testBody));
 
         $this->assertEquals($testBody, $this->resource->update('test', $testInput));
+    }
+
+
+    public function testUpdateWithQuery()
+    {
+        $testInput = ['test' => 'body'];
+        $testBody = ['results' => ['my' => 'test']];
+        $responseMock = Mockery::mock();
+        $this->sparkPostMock->httpAdapter->shouldReceive('send')->
+            once()->
+            with('/.*\/test\?arg\=1$/', 'PUT', Mockery::type('array'), json_encode($testInput))->
+            andReturn($responseMock);
+        $responseMock->shouldReceive('getStatusCode')->andReturn(200);
+        $responseMock->shouldReceive('getBody->getContents')->andReturn(json_encode($testBody));
+
+        $this->assertEquals($testBody, $this->resource->update('test', $testInput, ["query" => ["arg" => 1]]));
     }
 
     public function testGet()
