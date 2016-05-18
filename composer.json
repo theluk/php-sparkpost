@@ -15,7 +15,7 @@
     "fix-style": "php-cs-fixer fix ."
   },
   "require": {
-    "php": ">=5.5.0",
+    "php": ">=5.4.0",
     "egeloen/http-adapter": "*"
   },
   "require-dev": {
